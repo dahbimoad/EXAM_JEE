@@ -90,7 +90,7 @@
                 </div>
                 
                 <h:commandButton value="Mettre à jour" action="#{userBean.updateSelectedUser()}" styleClass="btn">
-                    <f:ajax execute="@form" render=":usersTableForm :autoTableForm @form" />
+                    <f:ajax execute="@form" render="@all" />
                 </h:commandButton>
                 
                 <h:commandButton value="Annuler" action="#{userBean.cancelUpdate()}" styleClass="btn" immediate="true">
@@ -189,7 +189,7 @@
                 </div>
                 
                 <h:commandButton value="Mettre à jour" action="#{autoBean.updateSelectedAuto()}" styleClass="btn">
-                    <f:ajax execute="@form" render="@form :autoTableForm" />
+                    <f:ajax execute="@form" render="@all" />
                 </h:commandButton>
                 
                 <h:commandButton value="Annuler" action="#{autoBean.cancelUpdate()}" styleClass="btn" immediate="true">

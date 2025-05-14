@@ -89,16 +89,16 @@ public class AutoBean implements Serializable {
             selectedAuto = null;
             selectedUserId = 0;
             
-            // Add a sleep to ensure database operations complete
+            // Add a small delay to ensure updates are completed
             try {
-                Thread.sleep(100);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             
-            // Force JSF to refresh the view
-            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("autoTableForm");
-            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("usersTableForm");
+            // Force a complete refresh
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.getPartialViewContext().setRenderAll(true);
         }
     }
     
