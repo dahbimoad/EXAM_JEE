@@ -7,6 +7,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import service.AutoService;
 import service.UserService;
+import jakarta.faces.context.FacesContext;
 
 import java.io.Serializable;
 import java.util.List;
@@ -47,8 +48,22 @@ public class AutoBean implements Serializable {
     
     // Delete an auto
     public void deleteAuto(int id) {
+        System.out.println("Deleting auto with ID: " + id);
         autoService.deleteAuto(id);
+        
+        // Force a refresh of the data
         loadAutos();
+        
+        // Add a sleep to ensure database operations complete
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Force JSF to refresh the view
+        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("autoTableForm");
+        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("usersTableForm");
     }
     
     // Select an auto for editing
@@ -61,12 +76,30 @@ public class AutoBean implements Serializable {
     
     // Update selected auto
     public void updateSelectedAuto() {
-        User user = userService.getUserById(selectedUserId);
-        selectedAuto.setUser(user);
-        autoService.saveAuto(selectedAuto);
-        selectedAuto = null;
-        selectedUserId = 0;
-        loadAutos();
+        if (selectedAuto != null) {
+            System.out.println("Updating auto with ID: " + selectedAuto.getId());
+            User user = userService.getUserById(selectedUserId);
+            selectedAuto.setUser(user);
+            autoService.saveAuto(selectedAuto);
+            
+            // Force a refresh of the data from the database
+            loadAutos();
+            
+            // Clear selection
+            selectedAuto = null;
+            selectedUserId = 0;
+            
+            // Add a sleep to ensure database operations complete
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+            // Force JSF to refresh the view
+            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("autoTableForm");
+            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("usersTableForm");
+        }
     }
     
     // Cancel update

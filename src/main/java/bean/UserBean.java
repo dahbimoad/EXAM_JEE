@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import service.UserService;
+import jakarta.faces.context.FacesContext;
 
 import java.io.Serializable;
 import java.util.List;
@@ -40,8 +41,22 @@ public class UserBean implements Serializable {
     
     // Delete a user
     public void deleteUser(int id) {
+        System.out.println("Deleting user with ID: " + id);
         userService.deleteUser(id);
+        
+        // Force a refresh of the data
         loadUsers();
+        
+        // Add a sleep to ensure database operations complete
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Force JSF to refresh the view
+        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("usersTableForm");
+        FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("autoTableForm");
     }
     
     // Select a user for editing
@@ -51,9 +66,27 @@ public class UserBean implements Serializable {
     
     // Update selected user
     public void updateSelectedUser() {
-        userService.saveUser(selectedUser);
-        selectedUser = null;
-        loadUsers();
+        if (selectedUser != null) {
+            System.out.println("Updating user with ID: " + selectedUser.getId());
+            userService.saveUser(selectedUser);
+            
+            // Force a refresh of the data from the database
+            loadUsers();
+            
+            // Clear selection
+            selectedUser = null;
+            
+            // Add a sleep to ensure database operations complete
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+            // Force JSF to refresh the view
+            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("usersTableForm");
+            FacesContext.getCurrentInstance().getPartialViewContext().getRenderIds().add("autoTableForm");
+        }
     }
     
     // Cancel update
